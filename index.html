@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joe OBrien - Tinkers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Replaced Inter with the 'Creepster' font for a crazier look -->
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+    <style>
+        /* Apply the crazy font to the whole page */
+        body {
+            font-family: 'Creepster', cursive;
+            letter-spacing: 0.05em;
+        }
+
+        /* Keyframes for the shimmer animation on text */
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        /* This is the container for the project grid. On hover, it affects all children 'a' tags. */
+        .project-grid:hover > a {
+            opacity: 0.4;
+            filter: grayscale(100%);
+            transition: opacity 0.4s ease-in-out, filter 0.4s ease-in-out, transform 0.4s ease-in-out;
+        }
+
+        /* This targets the specific project being hovered, overriding the style above. */
+        .project-grid > a:hover {
+            opacity: 1;
+            filter: grayscale(0%);
+            transform: scale(1.08); /* Slightly increased scale for more pop */
+        }
+
+        /* This applies the shimmer effect to the h3 inside the hovered project link */
+        .project-grid > a:hover h3 {
+            background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+            background-size: 200% auto;
+            color: transparent;
+            background-clip: text;
+            -webkit-background-clip: text;
+            animation: shimmer 2s linear infinite;
+        }
+        
+        /* Make header text larger to suit the font */
+        h1 {
+            font-size: 5rem; /* 80px */
+        }
+        
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 7rem; /* 112px */
+            }
+        }
+
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100">
+
+    <!-- Header Section -->
+    <header class="bg-gray-800 shadow-lg shadow-black/30">
+        <div class="container mx-auto px-6 py-16 text-center">
+            <h1 class="font-bold text-white tracking-widest">John Doe</h1>
+            <p class="mt-4 text-2xl md:text-3xl text-red-500">Creative Developer & Designer</p>
+        </div>
+    </header>
+
+    <!-- Projects Grid Section -->
+    <main class="container mx-auto px-6 py-12">
+        <!-- Added 'project-grid' class to enable the hover effects -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 project-grid">
+
+            <!-- Project 1 -->
+            <a href="#" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
+                <img src="https://placehold.co/600x400/3498db/000000?text=Project+One" alt="Project One" class="w-full h-64 object-cover">
+                <div class="p-6">
+                    <h3 class="text-4xl font-semibold text-gray-100">Project One</h3>
+                </div>
+            </a>
+
+            <!-- Project 2 -->
+            <a href="#" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
+                <img src="https://placehold.co/600x400/e74c3c/000000?text=Project+Two" alt="Project Two" class="w-full h-64 object-cover">
+                <div class="p-6">
+                    <h3 class="text-4xl font-semibold text-gray-100">Project Two</h3>
+                </div>
+            </a>
+
+            <!-- Project 3 -->
+            <a href="#" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
+                <img src="https://placehold.co/600x400/2ecc71/000000?text=Project+Three" alt="Project Three" class="w-full h-64 object-cover">
+                <div class="p-6">
+                    <h3 class="text-4xl font-semibold text-gray-100">Project Three</h3>
+                </div>
+            </a>
+
+            <!-- Project 4 -->
+            <a href="#" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
+                <img src="https://placehold.co/600x400/f1c40f/000000?text=Project+Four" alt="Project Four" class="w-full h-64 object-cover">
+                <div class="p-6">
+                    <h3 class="text-4xl font-semibold text-gray-100">Project Four</h3>
+                </div>
+            </a>
+
+            <!-- Project 5 -->
+            <a href="#" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
+                <img src="https://placehold.co/600x400/9b59b6/000000?text=Project+Five" alt="Project Five" class="w-full h-64 object-cover">
+                <div class="p-6">
+                    <h3 class="text-4xl font-semibold text-gray-100">Project Five</h3>
+                </div>
+            </a>
+
+            <!-- Project 6 -->
+            <a href="#" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
+                <img src="https://placehold.co/600x400/1abc9c/000000?text=Project+Six" alt="Project Six" class="w-full h-64 object-cover">
+                <div class="p-6">
+                    <h3 class="text-4xl font-semibold text-gray-100">Project Six</h3>
+                </div>
+            </a>
+
+            <!-- Project 7 -->
+            <a href="#" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
+                <img src="https://placehold.co/600x400/e67e22/000000?text=Project+Seven" alt="Project Seven" class="w-full h-64 object-cover">
+                <div class="p-6">
+                    <h3 class="text-4xl font-semibold text-gray-100">Project Seven</h3>
+                </div>
+            </a>
+
+            <!-- Project 8 -->
+            <a href="#" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
+                <img src="https://placehold.co/600x400/34495e/000000?text=Project+Eight" alt="Project Eight" class="w-full h-64 object-cover">
+                <div class="p-6">
+                    <h3 class="text-4xl font-semibold text-gray-100">Project Eight</h3>
+                </div>
+            </a>
+
+            <!-- Project 9 -->
+            <a href="#" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
+                <img src="https://placehold.co/600x400/c0392b/000000?text=Project+Nine" alt="Project Nine" class="w-full h-64 object-cover">
+                <div class="p-6">
+                    <h3 class="text-4xl font-semibold text-gray-100">Project Nine</h3>
+                </div>
+            </a>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 mt-12">
+        <div class="container mx-auto px-6 py-6 text-center text-gray-500">
+            <p>&copy; 2024 John Doe. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
