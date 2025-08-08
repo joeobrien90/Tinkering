@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Running Leprechaun - Three.js</title>
+    <meta charset="utf-8">
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #87CEEB; }
+    </style>
+</head>
+<body>
+
+<script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.166.1/build/three.module.js"
+        }
+    }
+</script>
+
+<script type="module">
+    import * as THREE from 'three';
+
+    // Scene setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    document.body.appendChild(renderer.domElement);
+
+    // Lighting
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambientLight);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    directionalLight.position.set(5, 10, 7.5);
+    directionalLight.castShadow = true;
+    scene.add(directionalLight);
+
+    // Ground plane
+    const groundGeometry = new THREE.PlaneGeometry(100, 100);
+    const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x228B22 });
+    const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -2.5;
+    ground.receiveShadow = true;
+    scene.add(ground);
+
+    // Leprechaun Group
+    const leprechaun = new THREE.Group();
+    scene.add(leprechaun);
+    leprechaun.position.y = -0.5;
+
+    // Materials
+    const greenMaterial = new THREE.MeshStandardMaterial({ color: 0x006400 });
+    const skinMaterial = new THREE.MeshStandardMaterial({ color: 0xFFDBAC });
+    const blackMaterial = new THREE.MeshStandardMaterial({ color: 0x111111 });
+    const goldMaterial = new THREE.MeshStandardMaterial({ color: 0xFFD700 });
+    const hairMaterial = new THREE.MeshStandardMaterial({ color: 0xFF4500 }); // Orange for hair/beard
+
+    // Body
+    const bodyGeometry = new THREE.CylinderGeometry(0.5, 0.5, 1, 16);
+    const body = new THREE.Mesh(bodyGeometry, greenMaterial);
+    body.castShadow = true;
+    leprechaun.add(body);
+
+    // Head
+    const head = new THREE.Group();
+    head.position.y = 1.2;
+    leprechaun.add(head);
+
+    const headGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+    const headMesh = new THREE.Mesh(headGeometry, skinMaterial);
+    headMesh.castShadow = true;
+    head.add(headMesh);
+    
+    // Hat
+    const hatBrimGeometry = new THREE.CylinderGeometry(0.6, 0.6, 0.1, 32);
+    const hatBrim = new THREE.Mesh(hatBrimGeometry, greenMaterial);
+    hatBrim.position.y = 0.25;
+    hatBrim.castShadow = true;
+    head.add(hatBrim);
+
+    const hatTopGeometry = new THREE.CylinderGeometry(0.4, 0.4, 0.8, 32);
+    const hatTop = new THREE.Mesh(hatTopGeometry, greenMaterial);
+    hatTop.position.y = 0.7;
+    hatTop.castShadow = true;
+    head.add(hatTop);
+
+    // Beard
+    const beardGeometry = new THREE.ConeGeometry(0.5, 0.7, 32);
+    const beard = new THREE.Mesh(beardGeometry, hairMaterial);
+    beard.position.z = 0.3;
+    beard.position.y = -0.3;
+    beard.rotation.x = 0.5;
+    head.add(beard);
+
+    // Limbs
+    const limbGeometry = new THREE.CylinderGeometry(0.1, 0.1, 1, 16);
+    
+    const leftLeg = new THREE.Mesh(limbGeometry, greenMaterial);
+    leftLeg.position.set(-0.25, -1, 0);
+    leftLeg.castShadow = true;
+    leprechaun.add(leftLeg);
+
+    const rightLeg = new THREE.Mesh(limbGeometry, greenMaterial);
+    rightLeg.position.set(0.25, -1, 0);
+    rightLeg.castShadow = true;
+    leprechaun.add(rightLeg);
+    
+    const leftArm = new THREE.Mesh(limbGeometry, greenMaterial);
+    leftArm.position.set(-0.6, 0.2, 0.3);
+    leftArm.rotation.set(Math.PI / 2, -0.5, 0);
+    leftArm.castShadow = true;
+    leprechaun.add(leftArm);
+    
+    const rightArm = new THREE.Mesh(limbGeometry, greenMaterial);
+    rightArm.position.set(0.6, 0.2, 0.3);
+    rightArm.rotation.set(Math.PI / 2, 0.5, 0);
+    rightArm.castShadow = true;
+    leprechaun.add(rightArm);
+
+    // Flute
+    const fluteGeometry = new THREE.CylinderGeometry(0.05, 0.05, 1.5, 16);
+    const flute = new THREE.Mesh(fluteGeometry, goldMaterial);
+    flute.position.set(0, 0.8, 0.7);
+    flute.rotation.z = Math.PI / 2;
+    flute.castShadow = true;
+    leprechaun.add(flute);
+
+    // Camera position
+    camera.position.set(0, 2, 8);
+    camera.lookAt(scene.position);
+    
+    const clock = new THREE.Clock();
+
+    // Animation loop
+    function animate() {
+        requestAnimationFrame(animate);
+
+        const delta = clock.getDelta();
+        const time = clock.getElapsedTime();
+        
+        // Running animation
+        leprechaun.position.x = -10 + (time * 2 % 20);
+
+        // Leg movement
+        leftLeg.rotation.x = Math.sin(time * 10) * 0.8;
+        rightLeg.rotation.x = -Math.sin(time * 10) * 0.8;
+
+        // Body bobbing
+        leprechaun.position.y = -0.5 + Math.abs(Math.sin(time * 10) * 0.1);
+        
+        // Flute playing bob
+        flute.position.y = 0.8 + Math.sin(time * 15) * 0.02;
+        flute.rotation.y = Math.sin(time * 15) * 0.05;
+
+        renderer.render(scene, camera);
+    }
+
+    // Handle window resizing
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    animate();
+
+</script>
+</body>
+</html>

@@ -3,162 +3,284 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Joe OBrien - Tinkers</title>
+    <title>Joe OBrien - Dev Projects</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Replaced Inter with the 'Creepster' font for a crazier look -->
-    <link href="https://fonts.googleapis.com/css2?family=Creepster&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Apply the crazy font to the whole page */
-        body {
+        /* --- General Tab Styles --- */
+        .tab-btn {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* --- 'Play' Theme Styles --- */
+        .theme-play {
             font-family: 'Creepster', cursive;
             letter-spacing: 0.05em;
         }
-
-        /* Keyframes for the shimmer animation on text */
-        @keyframes shimmer {
-            0% {
-                background-position: -200% 0;
-            }
-            100% {
-                background-position: 200% 0;
+        .theme-play .header-title {
+            font-size: 5rem; /* 80px */
+        }
+        @media (min-width: 768px) {
+            .theme-play .header-title {
+                font-size: 7rem; /* 112px */
             }
         }
-
-        /* This is the container for the project grid. On hover, it affects all children 'a' tags. */
-        .project-grid:hover > a {
+        .theme-play .project-grid:hover > a {
             opacity: 0.4;
             filter: grayscale(100%);
             transition: opacity 0.4s ease-in-out, filter 0.4s ease-in-out, transform 0.4s ease-in-out;
         }
-
-        /* This targets the specific project being hovered, overriding the style above. */
-        .project-grid > a:hover {
+        .theme-play .project-grid > a:hover {
             opacity: 1;
             filter: grayscale(0%);
-            transform: scale(1.08); /* Slightly increased scale for more pop */
+            transform: scale(1.08);
         }
-
-        /* This applies the shimmer effect to the h3 inside the hovered project link */
-        .project-grid > a:hover h3 {
-            background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .theme-play .project-grid > a:hover h3 {
+            background: linear-gradient(to right, #2477d7, #847ad1);
             background-size: 200% auto;
             color: transparent;
             background-clip: text;
             -webkit-background-clip: text;
             animation: shimmer 2s linear infinite;
         }
-        
-        /* Make header text larger to suit the font */
-        h1 {
-            font-size: 5rem; /* 80px */
+
+        /* --- 'Work' Theme Styles --- */
+        .theme-work {
+            font-family: 'Inter', sans-serif;
         }
-        
+        .theme-work .header-title {
+            font-size: 4rem; /* 64px */
+            font-weight: 700;
+        }
         @media (min-width: 768px) {
-            h1 {
-                font-size: 7rem; /* 112px */
+            .theme-work .header-title {
+                font-size: 5rem; /* 80px */
             }
         }
-
+        .theme-work .professional-grid a {
+            transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
+        }
+        .theme-work .professional-grid a:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1), 0 6px 6px rgba(0,0,0,0.15);
+        }
+        .theme-work .professional-grid a:hover h3 {
+            color: #3b82f6; /* A professional blue color */
+            transition: color 0.3s ease;
+        }
+        
+        /* Utility to hide content */
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-100">
+<body class="bg-white text-gray-800 theme-work">
 
-    <!-- Header Section -->
-    <header class="bg-gray-800 shadow-lg shadow-black/30">
+    <header class="bg-gray-100 shadow-md">
         <div class="container mx-auto px-6 py-16 text-center">
-            <h1 class="font-bold text-white tracking-widest">John Doe</h1>
-            <p class="mt-4 text-2xl md:text-3xl text-red-500">Creative Developer & Designer</p>
+            <h1 class="header-title tracking-tight text-gray-900">Joe OBrien</h1>
+            <p class="header-subtitle mt-4 text-2xl md:text-3xl text-gray-600">Dev Projects</p>
         </div>
     </header>
 
-    <!-- Projects Grid Section -->
+    <div class="container mx-auto px-6 pt-12 flex justify-center border-b border-gray-300">
+        <button data-tab="work" class="tab-btn px-6 py-3 text-lg font-semibold border-b-2 border-blue-500 text-blue-600 bg-blue-50">Work</button>
+        <button data-tab="play" class="tab-btn px-6 py-3 text-lg font-semibold border-b-2 border-transparent text-gray-500 hover:bg-gray-100">Play</button>
+    </div>
+
     <main class="container mx-auto px-6 py-12">
-        <!-- Added 'project-grid' class to enable the hover effects -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 project-grid">
 
-            <!-- Project 1 -->
-            <a href="#" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
-                <img src="https://placehold.co/600x400/3498db/000000?text=Project+One" alt="Project One" class="w-full h-64 object-cover">
-                <div class="p-6">
-                    <h3 class="text-4xl font-semibold text-gray-100">Project One</h3>
-                </div>
-            </a>
+        <div id="work-content" class="tab-content">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 professional-grid">
+                <a href="#" target="_blank" class="block bg-white rounded-lg shadow-md overflow-hidden group">
+                    <img src="Images\Arbys.png" alt="Arbys Mailer Customization" class="w-full h-56 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-800">Arbys Mailer Customization</h3>
+                        <p class="mt-2 text-gray-600">Enterprise solution for customizing direct mailers for Arby's franchisees.</p>
+                    </div>
+                </a>
+                <a href="#" target="_blank" class="block bg-white rounded-lg shadow-md overflow-hidden group">
+                    <img src="Images\Beacon.png" alt="Unilever Coupon Aggregator" class="w-full h-56 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-800">Unilever Coupon Aggregator</h3>
+                        <p class="mt-2 text-gray-600">Internal tool for aggregating and managing national coupon campaigns.</p>
+                    </div>
+                </a>
+                <a href="#" target="_blank" class="block bg-white rounded-lg shadow-md overflow-hidden group">
+                    <img src="Images\Duracell.png" alt="Duracell Retail Ordering" class="w-full h-56 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-800">Duracell Retail Ordering</h3>
+                        <p class="mt-2 text-gray-600">B2B platform for retail partners to order and track Duracell inventory.</p>
+                    </div>
+                </a>
+                <a href="#" target="_blank" class="block bg-white rounded-lg shadow-md overflow-hidden group">
+                    <img src="Images\Loreal.png" alt="L'Oreal Asset Management" class="w-full h-56 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-800">L'Oreal Asset Management</h3>
+                        <p class="mt-2 text-gray-600">Digital asset management system for L'Oreal's marketing materials.</p>
+                    </div>
+                </a>
+                <a href="#" target="_blank" class="block bg-white rounded-lg shadow-md overflow-hidden group">
+                    <img src="Images\SME.png" alt="P&G Process SME Bot" class="w-full h-56 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-800">P&G Process SME Bot</h3>
+                        <p class="mt-2 text-gray-600">AI-powered chatbot to answer internal process questions for P&G employees.</p>
+                    </div>
+                </a>
+                <a href="#" target="_blank" class="block bg-white rounded-lg shadow-md overflow-hidden group">
+                    <img src="https://placehold.co/600x400/3b82f6/ffffff?text=Work+Project" alt="Proof File AI Assist" class="w-full h-56 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-800">Proof File AI Assist</h3>
+                        <p class="mt-2 text-gray-600">AI tool to automate the pre-flight checking and validation of print-ready files.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
 
-            <!-- Project 2 -->
-            <a href="#" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
-                <img src="https://placehold.co/600x400/e74c3c/000000?text=Project+Two" alt="Project Two" class="w-full h-64 object-cover">
-                <div class="p-6">
-                    <h3 class="text-4xl font-semibold text-gray-100">Project Two</h3>
-                </div>
-            </a>
-
-            <!-- Project 3 -->
-            <a href="#" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
-                <img src="https://placehold.co/600x400/2ecc71/000000?text=Project+Three" alt="Project Three" class="w-full h-64 object-cover">
-                <div class="p-6">
-                    <h3 class="text-4xl font-semibold text-gray-100">Project Three</h3>
-                </div>
-            </a>
-
-            <!-- Project 4 -->
-            <a href="#" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
-                <img src="https://placehold.co/600x400/f1c40f/000000?text=Project+Four" alt="Project Four" class="w-full h-64 object-cover">
-                <div class="p-6">
-                    <h3 class="text-4xl font-semibold text-gray-100">Project Four</h3>
-                </div>
-            </a>
-
-            <!-- Project 5 -->
-            <a href="#" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
-                <img src="https://placehold.co/600x400/9b59b6/000000?text=Project+Five" alt="Project Five" class="w-full h-64 object-cover">
-                <div class="p-6">
-                    <h3 class="text-4xl font-semibold text-gray-100">Project Five</h3>
-                </div>
-            </a>
-
-            <!-- Project 6 -->
-            <a href="#" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
-                <img src="https://placehold.co/600x400/1abc9c/000000?text=Project+Six" alt="Project Six" class="w-full h-64 object-cover">
-                <div class="p-6">
-                    <h3 class="text-4xl font-semibold text-gray-100">Project Six</h3>
-                </div>
-            </a>
-
-            <!-- Project 7 -->
-            <a href="#" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
-                <img src="https://placehold.co/600x400/e67e22/000000?text=Project+Seven" alt="Project Seven" class="w-full h-64 object-cover">
-                <div class="p-6">
-                    <h3 class="text-4xl font-semibold text-gray-100">Project Seven</h3>
-                </div>
-            </a>
-
-            <!-- Project 8 -->
-            <a href="#" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
-                <img src="https://placehold.co/600x400/34495e/000000?text=Project+Eight" alt="Project Eight" class="w-full h-64 object-cover">
-                <div class="p-6">
-                    <h3 class="text-4xl font-semibold text-gray-100">Project Eight</h3>
-                </div>
-            </a>
-
-            <!-- Project 9 -->
-            <a href="#" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
-                <img src="https://placehold.co/600x400/c0392b/000000?text=Project+Nine" alt="Project Nine" class="w-full h-64 object-cover">
-                <div class="p-6">
-                    <h3 class="text-4xl font-semibold text-gray-100">Project Nine</h3>
-                </div>
-            </a>
-
+        <div id="play-content" class="tab-content hidden">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 project-grid">
+                <a href="https://sites.google.com/view/sonzbot/jambot" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
+                    <img src="https://placehold.co/600x400/f1c40f/000000?text=Morph" alt="Project Four" class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-4xl font-semibold text-gray-100">Morph Drum Machine</h3>
+                    </div>
+                </a>
+                <a href="leprechaun.html" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
+                    <img src="https://placehold.co/600x400/9b59b6/000000?text=Leprechaun" class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-4xl font-semibold text-gray-100">The Leprechaun VST</h3>
+                    </div>
+                </a>
+                <a href="#" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
+                    <img src="https://placehold.co/600x400/1abc9c/000000?text=Tone" class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-4xl font-semibold text-gray-100">Tone Sherpa</h3>
+                    </div>
+                </a>
+                <a href="https://sites.google.com/view/sonzbot/jambot" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
+                    <img src="https://placehold.co/600x400/f1c40f/000000?text=Band" alt="Project Four" class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-4xl font-semibold text-gray-100">Band DB</h3>
+                    </div>
+                </a>
+                <a href="leprechaun.html" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
+                    <img src="https://placehold.co/600x400/9b59b6/000000?text=Concert" class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-4xl font-semibold text-gray-100">My Concert Archive</h3>
+                    </div>
+                </a>
+                <a href="#" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
+                    <img src="https://placehold.co/600x400/1abc9c/000000?text=Wedding" class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-4xl font-semibold text-gray-100">Croud-Sourced Wedding</h3>
+                    </div>
+                </a>
+                <a href="#" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
+                    <img src="https://placehold.co/600x400/1abc9c/000000?text=Underground" class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-4xl font-semibold text-gray-100">Underground Music Hut</h3>
+                    </div>
+                </a>
+                <a href="#" target="_blank" class="block bg-gray-800 rounded-lg shadow-lg overflow-hidden transform transition-all duration-300 group">
+                    <img src="https://placehold.co/600x400/1abc9c/000000?text=Toddler" class="w-full h-64 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-4xl font-semibold text-gray-100">Toddler Trek</h3>
+                    </div>
+                </a>
+            </div>
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-gray-800 mt-12">
+    <footer class="mt-12">
         <div class="container mx-auto px-6 py-6 text-center text-gray-500">
-            <p>&copy; 2024 John Doe. All Rights Reserved.</p>
+            <p>&copy; 2025 Joe OBrien</p>
         </div>
     </footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tabs = document.querySelectorAll('.tab-btn');
+        const content = document.querySelectorAll('.tab-content');
+        const body = document.body;
+        const header = document.querySelector('header');
+        const footer = document.querySelector('footer');
+        const headerTitle = document.querySelector('.header-title');
+        const headerSubtitle = document.querySelector('.header-subtitle');
+
+        // Styles for 'Play' theme
+        const playTheme = {
+            bodyBg: 'bg-white-900',
+            bodyText: 'text-gray-100',
+            headerBg: 'bg-white-800',
+            headerShadow: 'shadow-lg shadow-black/30',
+            headerTitleText: 'text-white',
+            headerSubtitleText: 'text-red-500',
+            footerBg: 'bg-gray-800'
+        };
+
+        // Styles for 'Work' theme
+        const workTheme = {
+            bodyBg: 'bg-white',
+            bodyText: 'text-gray-800',
+            headerBg: 'bg-gray-100',
+            headerShadow: 'shadow-md',
+            headerTitleText: 'text-gray-900',
+            headerSubtitleText: 'text-gray-600',
+            footerBg: 'bg-gray-100'
+        };
+        
+        function applyTheme(themeConfig) {
+            // Remove all possible theme classes before adding new ones
+            body.classList.remove(workTheme.bodyBg, workTheme.bodyText, playTheme.bodyBg, playTheme.bodyText);
+            header.classList.remove(workTheme.headerBg, workTheme.headerShadow, playTheme.headerBg, playTheme.headerShadow);
+            headerTitle.classList.remove(workTheme.headerTitleText, playTheme.headerTitleText);
+            headerSubtitle.classList.remove(workTheme.headerSubtitleText, playTheme.headerSubtitleText);
+            footer.classList.remove(workTheme.footerBg, playTheme.footerBg);
+
+            // Add new theme classes
+            body.classList.add(themeConfig.bodyBg, themeConfig.bodyText);
+            header.classList.add(themeConfig.headerBg, themeConfig.headerShadow);
+            headerTitle.classList.add(themeConfig.headerTitleText);
+            headerSubtitle.classList.add(themeConfig.headerSubtitleText);
+            footer.classList.add(themeConfig.footerBg);
+        }
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const target = tab.getAttribute('data-tab');
+
+                // Update tab buttons UI
+                tabs.forEach(t => {
+                    t.classList.remove('border-blue-500', 'text-blue-600', 'bg-blue-50');
+                    t.classList.add('border-transparent', 'text-gray-500', 'hover:bg-gray-100');
+                });
+                tab.classList.add('border-blue-500', 'text-blue-600', 'bg-blue-50');
+                tab.classList.remove('border-transparent', 'text-gray-500', 'hover:bg-gray-100');
+
+                // Show/hide content and switch theme
+                content.forEach(c => c.classList.add('hidden'));
+                document.getElementById(target + '-content').classList.remove('hidden');
+
+                if (target === 'work') {
+                    body.classList.remove('theme-play');
+                    body.classList.add('theme-work');
+                    applyTheme(workTheme);
+                } else {
+                    body.classList.remove('theme-work');
+                    body.classList.add('theme-play');
+                    applyTheme(playTheme);
+                }
+            });
+        });
+    });
+</script>
 
 </body>
 </html>
