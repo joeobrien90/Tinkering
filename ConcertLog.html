@@ -18,7 +18,6 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-        /* Simple animation for modal */
         .modal-enter {
             animation: fadeIn 0.3s ease-out;
         }
@@ -26,19 +25,23 @@
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
         }
-        /* Custom scrollbar for timeline */
-        #timeline-container::-webkit-scrollbar {
+        #timeline-container::-webkit-scrollbar, #user-list-container::-webkit-scrollbar {
             width: 8px;
         }
-        #timeline-container::-webkit-scrollbar-track {
+        #timeline-container::-webkit-scrollbar-track, #user-list-container::-webkit-scrollbar-track {
             background: #f1f5f9;
         }
-        #timeline-container::-webkit-scrollbar-thumb {
+        #timeline-container::-webkit-scrollbar-thumb, #user-list-container::-webkit-scrollbar-thumb {
             background: #94a3b8;
             border-radius: 10px;
         }
-        #timeline-container::-webkit-scrollbar-thumb:hover {
+        #timeline-container::-webkit-scrollbar-thumb:hover, #user-list-container::-webkit-scrollbar-thumb:hover {
             background: #64748b;
+        }
+        .tab-active {
+            border-color: #3b82f6;
+            color: #3b82f6;
+            font-weight: 600;
         }
     </style>
 </head>
@@ -47,7 +50,7 @@
     <!-- Main Application Container -->
     <div id="app" class="min-h-screen flex flex-col items-center justify-center p-4">
 
-        <!-- Login View (Visible when logged out) -->
+        <!-- Login View -->
         <div id="login-view" class="text-center">
             <h1 class="text-5xl font-bold text-slate-900 mb-2">ConcertLog</h1>
             <p class="text-lg text-slate-600 mb-8">Your personal timeline of memorable concerts.</p>
@@ -57,35 +60,48 @@
             </button>
         </div>
 
-        <!-- Main App View (Visible when logged in) -->
+        <!-- Main App View -->
         <div id="app-view" class="hidden w-full max-w-4xl h-[90vh] bg-white rounded-2xl shadow-xl flex flex-col">
-            <!-- Header -->
             <header class="flex items-center justify-between p-4 border-b border-slate-200">
                 <h1 class="text-2xl font-bold text-slate-900">ConcertLog</h1>
                 <div class="flex items-center gap-4">
-                    <div id="user-info" class="text-right">
-                        <!-- User info will be injected here -->
-                    </div>
+                    <div id="user-info" class="text-right"></div>
                     <button id="logout-button" class="text-sm font-medium text-slate-600 hover:text-slate-900">Sign Out</button>
                 </div>
             </header>
 
             <!-- Main Content -->
             <main class="flex-1 p-6 overflow-y-hidden flex flex-col">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-semibold">Your Concert Timeline</h2>
-                    <button id="add-concert-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-transform transform hover:scale-105">
-                        + Add Concert
-                    </button>
+                <!-- Tabs -->
+                <div class="border-b border-slate-200 mb-4">
+                    <nav class="-mb-px flex gap-6" aria-label="Tabs">
+                        <button id="my-timeline-tab" class="shrink-0 border-b-2 px-1 pb-2 text-sm font-medium text-slate-500 hover:border-slate-300 hover:text-slate-700 tab-active">My Timeline</button>
+                        <button id="discover-tab" class="shrink-0 border-b-2 px-1 pb-2 text-sm font-medium text-slate-500 hover:border-slate-300 hover:text-slate-700">Discover</button>
+                    </nav>
                 </div>
-                <div id="timeline-container" class="flex-1 overflow-y-auto pr-2">
-                    <!-- Timeline items will be injected here -->
-                    <div id="loading-spinner" class="text-center py-10">
-                        <p class="text-slate-500">Loading concerts...</p>
+
+                <!-- Timeline View -->
+                <div id="timeline-view" class="flex-1 flex flex-col overflow-y-hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 id="timeline-header" class="text-xl font-semibold">Your Concert Timeline</h2>
+                        <button id="add-concert-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-transform transform hover:scale-105">
+                            + Add Concert
+                        </button>
                     </div>
-                     <div id="empty-state" class="hidden text-center py-10 px-4">
-                        <p class="text-slate-500 font-semibold text-lg">No concerts yet!</p>
-                        <p class="text-slate-400">Click "+ Add Concert" to start your timeline.</p>
+                    <div id="timeline-container" class="flex-1 overflow-y-auto pr-2">
+                        <div id="loading-spinner" class="text-center py-10"><p class="text-slate-500">Loading concerts...</p></div>
+                        <div id="empty-state" class="hidden text-center py-10 px-4">
+                            <p class="text-slate-500 font-semibold text-lg">No concerts yet!</p>
+                            <p class="text-slate-400">Click "+ Add Concert" to start your timeline.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Discover View -->
+                <div id="discover-view" class="hidden flex-1 flex flex-col overflow-y-hidden">
+                    <h2 class="text-xl font-semibold mb-6">Discover Other Users</h2>
+                    <div id="user-list-container" class="flex-1 overflow-y-auto pr-2">
+                        <!-- User list will be injected here -->
                     </div>
                 </div>
             </main>
@@ -120,22 +136,19 @@
 
     <!-- Firebase SDK -->
     <script type="module">
-        // IMPORTANT: Replace with your Firebase project's configuration
         const firebaseConfig = {
             apiKey: "AIzaSyD3jQu5BK4k_2BkJ5c5rb1MMOEl6Z4lHQs",
             authDomain: "concertlog-b2627.firebaseapp.com",
             projectId: "concertlog-b2627",
-            storageBucket: "concertlog-b2627.firebasestorage.app",
+            storageBucket: "concertlog-b2627.appspot.com",
             messagingSenderId: "10176222847",
             appId: "1:10176222847:web:75b03030fed14fe68ed14a"
-            };
+        };
         
-        // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, setDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, setDoc, deleteDoc, serverTimestamp, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -147,17 +160,22 @@
         const loginButton = document.getElementById('login-button');
         const logoutButton = document.getElementById('logout-button');
         const userInfoDiv = document.getElementById('user-info');
+        
+        const myTimelineTab = document.getElementById('my-timeline-tab');
+        const discoverTab = document.getElementById('discover-tab');
+        const timelineView = document.getElementById('timeline-view');
+        const discoverView = document.getElementById('discover-view');
+        const timelineHeader = document.getElementById('timeline-header');
         const timelineContainer = document.getElementById('timeline-container');
+        const userListContainer = document.getElementById('user-list-container');
         const loadingSpinner = document.getElementById('loading-spinner');
         const emptyState = document.getElementById('empty-state');
         
         const concertModal = document.getElementById('concert-modal');
-        const modalContent = document.getElementById('modal-content');
         const addConcertButton = document.getElementById('add-concert-button');
         const cancelButton = document.getElementById('cancel-button');
         const concertForm = document.getElementById('concert-form');
         const modalTitle = document.getElementById('modal-title');
-
         const bandNameInput = document.getElementById('band-name');
         const concertDateInput = document.getElementById('concert-date');
         const ratingInput = document.getElementById('rating');
@@ -165,54 +183,67 @@
         const concertIdInput = document.getElementById('concert-id');
 
         let currentUserId = null;
-        let unsubscribeTimeline = null; // To stop listening for data when logged out
+        let unsubscribeTimeline = null;
 
         // --- Authentication ---
-        loginButton.addEventListener('click', () => {
-            signInWithPopup(auth, provider)
-                .catch((error) => console.error("Google Sign-In Error: ", error));
-        });
+        loginButton.addEventListener('click', () => signInWithPopup(auth, provider).catch(console.error));
+        logoutButton.addEventListener('click', () => signOut(auth));
 
-        logoutButton.addEventListener('click', () => {
-            signOut(auth);
-        });
-
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // User is signed in
                 currentUserId = user.uid;
                 loginView.classList.add('hidden');
                 appView.classList.remove('hidden');
                 
-                // Display user info
-                userInfoDiv.innerHTML = `
-                    <p class="font-semibold text-slate-800">${user.displayName}</p>
-                    <p class="text-xs text-slate-500">${user.email}</p>
-                `;
+                userInfoDiv.innerHTML = `<p class="font-semibold text-slate-800">${user.displayName}</p><p class="text-xs text-slate-500">${user.email}</p>`;
                 
-                // Fetch and display concerts
-                fetchConcerts(currentUserId);
+                // Create/update public user profile
+                const userProfileRef = doc(db, 'publicUserData', user.uid);
+                await setDoc(userProfileRef, {
+                    displayName: user.displayName,
+                    email: user.email
+                }, { merge: true });
 
+                switchToMyTimeline();
             } else {
-                // User is signed out
                 currentUserId = null;
                 loginView.classList.remove('hidden');
                 appView.classList.add('hidden');
-                timelineContainer.innerHTML = ''; // Clear timeline
-                
-                // Unsubscribe from timeline updates if we were listening
-                if (unsubscribeTimeline) {
-                    unsubscribeTimeline();
-                }
+                if (unsubscribeTimeline) unsubscribeTimeline();
             }
         });
 
+        // --- Tab & View Switching ---
+        myTimelineTab.addEventListener('click', switchToMyTimeline);
+        discoverTab.addEventListener('click', switchToDiscover);
+        
+        function switchToMyTimeline() {
+            if (!currentUserId) return;
+            myTimelineTab.classList.add('tab-active');
+            discoverTab.classList.remove('tab-active');
+            timelineView.style.display = 'flex';
+            discoverView.style.display = 'none';
+            addConcertButton.style.display = 'block';
+            timelineHeader.textContent = 'Your Concert Timeline';
+            fetchConcerts(currentUserId, true); // true for editable
+        }
+
+        async function switchToDiscover() {
+            myTimelineTab.classList.remove('tab-active');
+            discoverTab.classList.add('tab-active');
+            timelineView.style.display = 'none';
+            discoverView.style.display = 'flex';
+            if (unsubscribeTimeline) unsubscribeTimeline();
+            await fetchAllUsers();
+        }
+
         // --- Firestore Data Handling ---
-        function fetchConcerts(userId) {
-            if (!userId) return;
+        function fetchConcerts(userId, isEditable) {
+            if (unsubscribeTimeline) unsubscribeTimeline(); // Unsubscribe from previous listener
             
             loadingSpinner.style.display = 'block';
             emptyState.classList.add('hidden');
+            timelineContainer.innerHTML = '';
 
             const concertsRef = collection(db, 'users', userId, 'concerts');
             const q = query(concertsRef, orderBy('concertDate', 'desc'));
@@ -220,16 +251,11 @@
             unsubscribeTimeline = onSnapshot(q, (snapshot) => {
                 loadingSpinner.style.display = 'none';
                 if (snapshot.empty) {
-                    timelineContainer.innerHTML = ''; // Clear previous items
                     emptyState.classList.remove('hidden');
+                    timelineContainer.innerHTML = '';
                 } else {
                     emptyState.classList.add('hidden');
-                    const concertsHtml = snapshot.docs.map(doc => {
-                        const concert = doc.data();
-                        return createConcertElement(doc.id, concert);
-                    }).join('');
-                    timelineContainer.innerHTML = concertsHtml;
-                    addEventListenersToConcertItems();
+                    timelineContainer.innerHTML = snapshot.docs.map(doc => createConcertElement(doc.id, doc.data(), isEditable)).join('');
                 }
             }, (error) => {
                 console.error("Error fetching concerts: ", error);
@@ -237,15 +263,45 @@
                 timelineContainer.innerHTML = `<p class="text-red-500 text-center">Could not load concerts.</p>`;
             });
         }
+
+        async function fetchAllUsers() {
+            userListContainer.innerHTML = '<p class="text-slate-500">Loading users...</p>';
+            try {
+                const usersRef = collection(db, 'publicUserData');
+                const snapshot = await getDocs(usersRef);
+                if (snapshot.empty) {
+                    userListContainer.innerHTML = '<p class="text-slate-500">No other users found.</p>';
+                    return;
+                }
+                userListContainer.innerHTML = snapshot.docs
+                    .filter(doc => doc.id !== currentUserId) // Exclude current user
+                    .map(doc => {
+                        const user = doc.data();
+                        return `
+                        <div class="bg-slate-50 p-4 rounded-lg mb-3 border border-slate-200 hover:bg-slate-100 hover:border-blue-300 cursor-pointer user-item" data-id="${doc.id}" data-name="${user.displayName}">
+                            <p class="font-semibold text-slate-800">${user.displayName}</p>
+                            <p class="text-sm text-slate-500">${user.email}</p>
+                        </div>
+                        `;
+                    }).join('');
+            } catch (error) {
+                console.error("Error fetching users: ", error);
+                userListContainer.innerHTML = '<p class="text-red-500">Could not load users.</p>';
+            }
+        }
         
-        function createConcertElement(id, concert) {
-            const date = new Date(concert.concertDate).toLocaleDateString('en-US', {
-                year: 'numeric', month: 'long', day: 'numeric'
-            });
+        function createConcertElement(id, concert, isEditable) {
+            const date = new Date(concert.concertDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
             const ratingStars = '★'.repeat(concert.rating) + '☆'.repeat(10 - concert.rating);
+            const editControls = `
+                <div class="mt-2 text-xs">
+                    <button class="text-slate-500 hover:text-blue-600 font-medium edit-btn">Edit</button>
+                    <button class="text-slate-500 hover:text-red-600 font-medium ml-2 delete-btn">Delete</button>
+                </div>
+            `;
 
             return `
-                <div class="bg-slate-50 p-4 rounded-lg mb-4 border border-slate-200 hover:shadow-md hover:border-blue-300 transition-all duration-200 concert-item" data-id="${id}">
+                <div class="bg-slate-50 p-4 rounded-lg mb-4 border border-slate-200 hover:shadow-md transition-all duration-200 concert-item" data-id="${id}">
                     <div class="flex justify-between items-start">
                         <div>
                             <p class="font-bold text-lg text-slate-800">${concert.bandName}</p>
@@ -253,10 +309,7 @@
                         </div>
                         <div class="text-right">
                             <p class="text-lg text-amber-400" title="Rating: ${concert.rating}/10">${ratingStars}</p>
-                            <div class="mt-2 text-xs">
-                                <button class="text-slate-500 hover:text-blue-600 font-medium edit-btn">Edit</button>
-                                <button class="text-slate-500 hover:text-red-600 font-medium ml-2 delete-btn">Delete</button>
-                            </div>
+                            ${isEditable ? editControls : ''}
                         </div>
                     </div>
                 </div>
@@ -266,9 +319,8 @@
         // --- Modal & Form Logic ---
         function openModal(concertData = null) {
             concertForm.reset();
-            ratingValueSpan.textContent = '5'; // Reset slider display
+            ratingValueSpan.textContent = '5';
             if (concertData) {
-                // Editing existing concert
                 modalTitle.textContent = 'Edit Concert';
                 bandNameInput.value = concertData.bandName;
                 concertDateInput.value = concertData.concertDate;
@@ -276,7 +328,6 @@
                 ratingValueSpan.textContent = concertData.rating;
                 concertIdInput.value = concertData.id;
             } else {
-                // Adding new concert
                 modalTitle.textContent = 'Add a New Concert';
                 concertIdInput.value = '';
             }
@@ -289,15 +340,8 @@
         
         addConcertButton.addEventListener('click', () => openModal());
         cancelButton.addEventListener('click', closeModal);
-        concertModal.addEventListener('click', (e) => {
-            if (e.target === concertModal) {
-                closeModal();
-            }
-        });
-        
-        ratingInput.addEventListener('input', (e) => {
-            ratingValueSpan.textContent = e.target.value;
-        });
+        concertModal.addEventListener('click', (e) => e.target === concertModal && closeModal());
+        ratingInput.addEventListener('input', (e) => ratingValueSpan.textContent = e.target.value);
 
         concertForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -312,56 +356,60 @@
 
             try {
                 if (concertId) {
-                    // Update existing document
-                    const concertRef = doc(db, 'users', currentUserId, 'concerts', concertId);
-                    await setDoc(concertRef, concertData, { merge: true });
+                    await setDoc(doc(db, 'users', currentUserId, 'concerts', concertId), concertData, { merge: true });
                 } else {
-                    // Add new document
                     concertData.createdAt = serverTimestamp();
-                    const concertsRef = collection(db, 'users', currentUserId, 'concerts');
-                    await addDoc(concertsRef, concertData);
+                    await addDoc(collection(db, 'users', currentUserId, 'concerts'), concertData);
                 }
                 closeModal();
             } catch (error) {
                 console.error("Error saving concert: ", error);
-                alert("Could not save the concert. Please try again.");
+                alert("Could not save the concert.");
             }
         });
         
-        // --- Event Delegation for Edit/Delete ---
-        function addEventListenersToConcertItems() {
-            timelineContainer.addEventListener('click', async (e) => {
-                const target = e.target;
-                const concertItem = target.closest('.concert-item');
-                if (!concertItem) return;
-
-                const concertId = concertItem.dataset.id;
-                
-                if (target.classList.contains('delete-btn')) {
-                    // Handle Delete
-                    if (confirm('Are you sure you want to delete this concert?')) {
-                        try {
-                            await deleteDoc(doc(db, 'users', currentUserId, 'concerts', concertId));
-                        } catch (error) {
-                            console.error("Error deleting document: ", error);
-                            alert("Could not delete concert.");
-                        }
-                    }
-                } else if (target.classList.contains('edit-btn')) {
-                    // Handle Edit
-                    const bandName = concertItem.querySelector('.font-bold').textContent;
-                    const dateStr = concertItem.querySelector('.text-sm').textContent;
-                    const rating = concertItem.querySelectorAll('.text-amber-400 svg').length;
-                    
-                    // This is a simplified way to get data for the form. 
-                    // A better way would be to fetch the doc again or store it in memory.
-                    const concertDoc = snapshot.docs.find(d => d.id === concertId)?.data();
-                    if(concertDoc) {
-                       openModal({ id: concertId, ...concertDoc });
+        // --- Event Delegation ---
+        timelineContainer.addEventListener('click', async (e) => {
+            const concertItem = e.target.closest('.concert-item');
+            if (!concertItem) return;
+            const concertId = concertItem.dataset.id;
+            
+            if (e.target.classList.contains('delete-btn')) {
+                if (confirm('Are you sure you want to delete this concert?')) {
+                    try {
+                        await deleteDoc(doc(db, 'users', currentUserId, 'concerts', concertId));
+                    } catch (error) {
+                        console.error("Error deleting document: ", error);
+                        alert("Could not delete concert.");
                     }
                 }
-            });
-        }
+            } else if (e.target.classList.contains('edit-btn')) {
+                // To get the full data for editing, we need to re-fetch it.
+                // A more optimized way would be to get it from the snapshot data already in memory.
+                const concertRef = doc(db, 'users', currentUserId, 'concerts', concertId);
+                const concertSnap = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js").then(({ getDoc }) => getDoc(concertRef));
+                if (concertSnap.exists()) {
+                    openModal({ id: concertId, ...concertSnap.data() });
+                }
+            }
+        });
+
+        userListContainer.addEventListener('click', (e) => {
+            const userItem = e.target.closest('.user-item');
+            if (!userItem) return;
+
+            const userId = userItem.dataset.id;
+            const userName = userItem.dataset.name;
+            
+            myTimelineTab.classList.add('tab-active');
+            discoverTab.classList.remove('tab-active');
+            timelineView.style.display = 'flex';
+            discoverView.style.display = 'none';
+            addConcertButton.style.display = 'none';
+            timelineHeader.textContent = `Viewing ${userName}'s Concerts`;
+            fetchConcerts(userId, false); // false for not editable
+        });
+
     </script>
 </body>
 </html>
