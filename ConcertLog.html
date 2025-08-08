@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConcertLog - Your Concert Timeline</title>
+
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .modal-enter {
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        #timeline-container::-webkit-scrollbar, #user-list-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        #timeline-container::-webkit-scrollbar-track, #user-list-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        #timeline-container::-webkit-scrollbar-thumb, #user-list-container::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 10px;
+        }
+        #timeline-container::-webkit-scrollbar-thumb:hover, #user-list-container::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        .tab-active {
+            border-color: #3b82f6;
+            color: #3b82f6;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+    <!-- Main Application Container -->
+    <div id="app" class="min-h-screen flex flex-col items-center justify-center p-4">
+
+        <!-- Login View -->
+        <div id="login-view" class="text-center">
+            <h1 class="text-5xl font-bold text-slate-900 mb-2">ConcertLog</h1>
+            <p class="text-lg text-slate-600 mb-8">Your personal timeline of memorable concerts.</p>
+            <button id="login-button" class="bg-white hover:bg-slate-50 text-slate-700 font-semibold py-3 px-6 border border-slate-300 rounded-lg shadow-md transition-transform transform hover:scale-105 flex items-center mx-auto">
+                <svg class="w-6 h-6 mr-3" viewBox="0 0 48 48"><path fill="#4285F4" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"></path><path fill="#34A853" d="M6.306 14.691L11.96 18.938C12.992 12.93 18.016 8 24 8c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"></path><path fill="#FBBC05" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-5.657-5.657A12.016 12.016 0 0 1 24 36c-5.984 0-11.008-4.93-12.034-10.938L6.306 29.309C9.656 35.663 16.318 40 24 40v4z"></path><path fill="#EA4335" d="M43.611 20.083H24v8h11.303a12.04 12.04 0 0 1-4.087 7.585l5.657 5.657C42.486 36.686 44 30.65 44 24c0-1.341-.138-2.65-.389-3.917z"></path></svg>
+                Sign In with Google
+            </button>
+        </div>
+
+        <!-- Main App View -->
+        <div id="app-view" class="hidden w-full max-w-4xl h-[90vh] bg-white rounded-2xl shadow-xl flex flex-col">
+            <header class="flex items-center justify-between p-4 border-b border-slate-200">
+                <h1 class="text-2xl font-bold text-slate-900">ConcertLog</h1>
+                <div class="flex items-center gap-4">
+                    <div id="user-info" class="text-right"></div>
+                    <button id="logout-button" class="text-sm font-medium text-slate-600 hover:text-slate-900">Sign Out</button>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="flex-1 p-6 overflow-y-hidden flex flex-col">
+                <!-- Tabs -->
+                <div class="border-b border-slate-200 mb-4">
+                    <nav class="-mb-px flex gap-6" aria-label="Tabs">
+                        <button id="my-timeline-tab" class="shrink-0 border-b-2 px-1 pb-2 text-sm font-medium text-slate-500 hover:border-slate-300 hover:text-slate-700 tab-active">My Timeline</button>
+                        <button id="discover-tab" class="shrink-0 border-b-2 px-1 pb-2 text-sm font-medium text-slate-500 hover:border-slate-300 hover:text-slate-700">Discover</button>
+                    </nav>
+                </div>
+
+                <!-- Timeline View -->
+                <div id="timeline-view" class="flex-1 flex flex-col overflow-y-hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 id="timeline-header" class="text-xl font-semibold">Your Concert Timeline</h2>
+                        <button id="add-concert-button" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-transform transform hover:scale-105">
+                            + Add Concert
+                        </button>
+                    </div>
+                    <div id="timeline-container" class="flex-1 overflow-y-auto pr-2">
+                        <div id="loading-spinner" class="text-center py-10"><p class="text-slate-500">Loading concerts...</p></div>
+                        <div id="empty-state" class="hidden text-center py-10 px-4">
+                            <p class="text-slate-500 font-semibold text-lg">No concerts yet!</p>
+                            <p class="text-slate-400">Click "+ Add Concert" to start your timeline.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Discover View -->
+                <div id="discover-view" class="hidden flex-1 flex flex-col overflow-y-hidden">
+                    <h2 class="text-xl font-semibold mb-6">Discover Other Users</h2>
+                    <div id="user-list-container" class="flex-1 overflow-y-auto pr-2">
+                        <!-- User list will be injected here -->
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Add/Edit Concert Modal -->
+    <div id="concert-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div id="modal-content" class="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md modal-enter">
+            <h2 id="modal-title" class="text-2xl font-bold mb-6">Add a New Concert</h2>
+            <form id="concert-form">
+                <input type="hidden" id="concert-id">
+                <div class="mb-4">
+                    <label for="band-name" class="block text-sm font-medium text-slate-700 mb-1">Band / Artist</label>
+                    <input type="text" id="band-name" class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div class="mb-4">
+                    <label for="concert-date" class="block text-sm font-medium text-slate-700 mb-1">Date</label>
+                    <input type="date" id="concert-date" class="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div class="mb-6">
+                    <label for="rating" class="block text-sm font-medium text-slate-700 mb-1">Rating (<span id="rating-value">5</span>/10)</label>
+                    <input type="range" id="rating" min="1" max="10" value="5" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+                </div>
+                <div class="flex justify-end gap-4">
+                    <button type="button" id="cancel-button" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-2 px-4 rounded-md">Cancel</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md">Save Concert</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        const firebaseConfig = {
+            apiKey: "AIzaSyD3jQu5BK4k_2BkJ5c5rb1MMOEl6Z4lHQs",
+            authDomain: "concertlog-b2627.firebaseapp.com",
+            projectId: "concertlog-b2627",
+            storageBucket: "concertlog-b2627.appspot.com",
+            messagingSenderId: "10176222847",
+            appId: "1:10176222847:web:75b03030fed14fe68ed14a"
+        };
+        
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, doc, setDoc, deleteDoc, serverTimestamp, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
+
+        // --- DOM Elements ---
+        const loginView = document.getElementById('login-view');
+        const appView = document.getElementById('app-view');
+        const loginButton = document.getElementById('login-button');
+        const logoutButton = document.getElementById('logout-button');
+        const userInfoDiv = document.getElementById('user-info');
+        
+        const myTimelineTab = document.getElementById('my-timeline-tab');
+        const discoverTab = document.getElementById('discover-tab');
+        const timelineView = document.getElementById('timeline-view');
+        const discoverView = document.getElementById('discover-view');
+        const timelineHeader = document.getElementById('timeline-header');
+        const timelineContainer = document.getElementById('timeline-container');
+        const userListContainer = document.getElementById('user-list-container');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const emptyState = document.getElementById('empty-state');
+        
+        const concertModal = document.getElementById('concert-modal');
+        const addConcertButton = document.getElementById('add-concert-button');
+        const cancelButton = document.getElementById('cancel-button');
+        const concertForm = document.getElementById('concert-form');
+        const modalTitle = document.getElementById('modal-title');
+        const bandNameInput = document.getElementById('band-name');
+        const concertDateInput = document.getElementById('concert-date');
+        const ratingInput = document.getElementById('rating');
+        const ratingValueSpan = document.getElementById('rating-value');
+        const concertIdInput = document.getElementById('concert-id');
+
+        let currentUserId = null;
+        let unsubscribeTimeline = null;
+
+        // --- Authentication ---
+        loginButton.addEventListener('click', () => signInWithPopup(auth, provider).catch(console.error));
+        logoutButton.addEventListener('click', () => signOut(auth));
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUserId = user.uid;
+                loginView.classList.add('hidden');
+                appView.classList.remove('hidden');
+                
+                userInfoDiv.innerHTML = `<p class="font-semibold text-slate-800">${user.displayName}</p><p class="text-xs text-slate-500">${user.email}</p>`;
+                
+                // Create/update public user profile
+                const userProfileRef = doc(db, 'publicUserData', user.uid);
+                await setDoc(userProfileRef, {
+                    displayName: user.displayName,
+                    email: user.email
+                }, { merge: true });
+
+                switchToMyTimeline();
+            } else {
+                currentUserId = null;
+                loginView.classList.remove('hidden');
+                appView.classList.add('hidden');
+                if (unsubscribeTimeline) unsubscribeTimeline();
+            }
+        });
+
+        // --- Tab & View Switching ---
+        myTimelineTab.addEventListener('click', switchToMyTimeline);
+        discoverTab.addEventListener('click', switchToDiscover);
+        
+        function switchToMyTimeline() {
+            if (!currentUserId) return;
+            myTimelineTab.classList.add('tab-active');
+            discoverTab.classList.remove('tab-active');
+            timelineView.style.display = 'flex';
+            discoverView.style.display = 'none';
+            addConcertButton.style.display = 'block';
+            timelineHeader.textContent = 'Your Concert Timeline';
+            fetchConcerts(currentUserId, true); // true for editable
+        }
+
+        async function switchToDiscover() {
+            myTimelineTab.classList.remove('tab-active');
+            discoverTab.classList.add('tab-active');
+            timelineView.style.display = 'none';
+            discoverView.style.display = 'flex';
+            if (unsubscribeTimeline) unsubscribeTimeline();
+            await fetchAllUsers();
+        }
+
+        // --- Firestore Data Handling ---
+        function fetchConcerts(userId, isEditable) {
+            if (unsubscribeTimeline) unsubscribeTimeline(); // Unsubscribe from previous listener
+            
+            loadingSpinner.style.display = 'block';
+            emptyState.classList.add('hidden');
+            timelineContainer.innerHTML = '';
+
+            const concertsRef = collection(db, 'users', userId, 'concerts');
+            const q = query(concertsRef, orderBy('concertDate', 'desc'));
+
+            unsubscribeTimeline = onSnapshot(q, (snapshot) => {
+                loadingSpinner.style.display = 'none';
+                if (snapshot.empty) {
+                    emptyState.classList.remove('hidden');
+                    timelineContainer.innerHTML = '';
+                } else {
+                    emptyState.classList.add('hidden');
+                    timelineContainer.innerHTML = snapshot.docs.map(doc => createConcertElement(doc.id, doc.data(), isEditable)).join('');
+                }
+            }, (error) => {
+                console.error("Error fetching concerts: ", error);
+                loadingSpinner.style.display = 'none';
+                timelineContainer.innerHTML = `<p class="text-red-500 text-center">Could not load concerts.</p>`;
+            });
+        }
+
+        async function fetchAllUsers() {
+            userListContainer.innerHTML = '<p class="text-slate-500">Loading users...</p>';
+            try {
+                const usersRef = collection(db, 'publicUserData');
+                const snapshot = await getDocs(usersRef);
+                if (snapshot.empty) {
+                    userListContainer.innerHTML = '<p class="text-slate-500">No other users found.</p>';
+                    return;
+                }
+                userListContainer.innerHTML = snapshot.docs
+                    .filter(doc => doc.id !== currentUserId) // Exclude current user
+                    .map(doc => {
+                        const user = doc.data();
+                        return `
+                        <div class="bg-slate-50 p-4 rounded-lg mb-3 border border-slate-200 hover:bg-slate-100 hover:border-blue-300 cursor-pointer user-item" data-id="${doc.id}" data-name="${user.displayName}">
+                            <p class="font-semibold text-slate-800">${user.displayName}</p>
+                            <p class="text-sm text-slate-500">${user.email}</p>
+                        </div>
+                        `;
+                    }).join('');
+            } catch (error) {
+                console.error("Error fetching users: ", error);
+                userListContainer.innerHTML = '<p class="text-red-500">Could not load users.</p>';
+            }
+        }
+        
+        function createConcertElement(id, concert, isEditable) {
+            const date = new Date(concert.concertDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            const ratingStars = '★'.repeat(concert.rating) + '☆'.repeat(10 - concert.rating);
+            const editControls = `
+                <div class="mt-2 text-xs">
+                    <button class="text-slate-500 hover:text-blue-600 font-medium edit-btn">Edit</button>
+                    <button class="text-slate-500 hover:text-red-600 font-medium ml-2 delete-btn">Delete</button>
+                </div>
+            `;
+
+            return `
+                <div class="bg-slate-50 p-4 rounded-lg mb-4 border border-slate-200 hover:shadow-md transition-all duration-200 concert-item" data-id="${id}">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="font-bold text-lg text-slate-800">${concert.bandName}</p>
+                            <p class="text-sm text-slate-500">${date}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-lg text-amber-400" title="Rating: ${concert.rating}/10">${ratingStars}</p>
+                            ${isEditable ? editControls : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // --- Modal & Form Logic ---
+        function openModal(concertData = null) {
+            concertForm.reset();
+            ratingValueSpan.textContent = '5';
+            if (concertData) {
+                modalTitle.textContent = 'Edit Concert';
+                bandNameInput.value = concertData.bandName;
+                concertDateInput.value = concertData.concertDate;
+                ratingInput.value = concertData.rating;
+                ratingValueSpan.textContent = concertData.rating;
+                concertIdInput.value = concertData.id;
+            } else {
+                modalTitle.textContent = 'Add a New Concert';
+                concertIdInput.value = '';
+            }
+            concertModal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            concertModal.classList.add('hidden');
+        }
+        
+        addConcertButton.addEventListener('click', () => openModal());
+        cancelButton.addEventListener('click', closeModal);
+        concertModal.addEventListener('click', (e) => e.target === concertModal && closeModal());
+        ratingInput.addEventListener('input', (e) => ratingValueSpan.textContent = e.target.value);
+
+        concertForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUserId) return;
+
+            const concertId = concertIdInput.value;
+            const concertData = {
+                bandName: bandNameInput.value,
+                concertDate: concertDateInput.value,
+                rating: parseInt(ratingInput.value, 10),
+            };
+
+            try {
+                if (concertId) {
+                    await setDoc(doc(db, 'users', currentUserId, 'concerts', concertId), concertData, { merge: true });
+                } else {
+                    concertData.createdAt = serverTimestamp();
+                    await addDoc(collection(db, 'users', currentUserId, 'concerts'), concertData);
+                }
+                closeModal();
+            } catch (error) {
+                console.error("Error saving concert: ", error);
+                alert("Could not save the concert.");
+            }
+        });
+        
+        // --- Event Delegation ---
+        timelineContainer.addEventListener('click', async (e) => {
+            const concertItem = e.target.closest('.concert-item');
+            if (!concertItem) return;
+            const concertId = concertItem.dataset.id;
+            
+            if (e.target.classList.contains('delete-btn')) {
+                if (confirm('Are you sure you want to delete this concert?')) {
+                    try {
+                        await deleteDoc(doc(db, 'users', currentUserId, 'concerts', concertId));
+                    } catch (error) {
+                        console.error("Error deleting document: ", error);
+                        alert("Could not delete concert.");
+                    }
+                }
+            } else if (e.target.classList.contains('edit-btn')) {
+                // To get the full data for editing, we need to re-fetch it.
+                // A more optimized way would be to get it from the snapshot data already in memory.
+                const concertRef = doc(db, 'users', currentUserId, 'concerts', concertId);
+                const concertSnap = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js").then(({ getDoc }) => getDoc(concertRef));
+                if (concertSnap.exists()) {
+                    openModal({ id: concertId, ...concertSnap.data() });
+                }
+            }
+        });
+
+        userListContainer.addEventListener('click', (e) => {
+            const userItem = e.target.closest('.user-item');
+            if (!userItem) return;
+
+            const userId = userItem.dataset.id;
+            const userName = userItem.dataset.name;
+            
+            myTimelineTab.classList.add('tab-active');
+            discoverTab.classList.remove('tab-active');
+            timelineView.style.display = 'flex';
+            discoverView.style.display = 'none';
+            addConcertButton.style.display = 'none';
+            timelineHeader.textContent = `Viewing ${userName}'s Concerts`;
+            fetchConcerts(userId, false); // false for not editable
+        });
+
+    </script>
+</body>
+</html>
